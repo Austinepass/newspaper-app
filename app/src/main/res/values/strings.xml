@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Newspaper</string>
+    <string name="source">Source :</string>
+    <string name="media_url_mp3">https://storage.googleapis.com/exoplayer-test-media-0/play.mp3</string>
+    <string name="time_period">Time Period:</string>
+    <string name="section">Section :</string>
+
+</resources>
