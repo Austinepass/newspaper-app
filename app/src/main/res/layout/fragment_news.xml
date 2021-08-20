@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="#F3EFEF"
     android:orientation="vertical"
-    tools:context=".ui.NewsActivity">
+    tools:context=".ui.NewsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/list"

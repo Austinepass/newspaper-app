@@ -1,59 +1,57 @@
 package com.orgustine.newspaper.ui
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.orgustine.newspaper.*
 import com.orgustine.newspaper.data.NewsRepository
 import com.orgustine.newspaper.data.NewsViewModel
 import com.orgustine.newspaper.data.ViewModelFactory
-import com.orgustine.newspaper.databinding.ActivityNewsBinding
+import com.orgustine.newspaper.databinding.FragmentNewsBinding
 import com.orgustine.newspaper.network.DataState
 import com.orgustine.newspaper.network.RetrofitBuilder
 
-class NewsActivity : AppCompatActivity(), OnItemClickListener {
+class NewsFragment : Fragment(R.layout.fragment_news), OnItemClickListener {
     private lateinit var viewModel: NewsViewModel
     private lateinit var viewModelFactory: ViewModelFactory
-    private lateinit var binding: ActivityNewsBinding
+    private lateinit var binding: FragmentNewsBinding
     private val newsAdapter = NewsAdapter(this)
+    private val args : NewsFragmentArgs by navArgs()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = ActivityNewsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding = FragmentNewsBinding.bind(view)
 
         viewModelFactory = ViewModelFactory(NewsRepository(RetrofitBuilder.apiService))
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(NewsViewModel::class.java)
-        val section = intent.extras?.getString("text_input")
-        val timePeriod = intent.extras?.getInt("time_period")
 
-        viewModel.getNews(section!!, timePeriod!!)
+        viewModel.getNews(args.section, args.time)
 
         subscribe()
         binding.list.apply {
-            layoutManager = LinearLayoutManager(this@NewsActivity)
+            layoutManager = LinearLayoutManager(requireContext())
             adapter = newsAdapter
         }
-
     }
 
+
     private fun subscribe() {
-        viewModel.dataState.observe(this, { dataState ->
+        viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
             when (dataState) {
                 is DataState.Waiting -> {
                     Snackbar.make(
-                        findViewById(android.R.id.content), "Fetching data...", Snackbar.LENGTH_LONG
+                        requireView(), "Fetching data...", Snackbar.LENGTH_LONG
                     ).show()
                 }
                 is DataState.Error -> {
                     Snackbar.make(
-                        findViewById(android.R.id.content),
+                        requireView(),
                         "Error: ${dataState.exception.localizedMessage}",
                         Snackbar.LENGTH_INDEFINITE
                     ).setAction("Retry") { viewModel.getNews("all-sections", 1) }
@@ -71,7 +69,7 @@ class NewsActivity : AppCompatActivity(), OnItemClickListener {
 
     override fun onItemClick(id: Int) {
         Toast.makeText(
-            this, "Item $id selected!", Toast.LENGTH_LONG
+            requireContext(), "Item $id selected!", Toast.LENGTH_LONG
         ).show()
     }
 }

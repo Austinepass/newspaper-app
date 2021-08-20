@@ -1,30 +1,27 @@
 package com.orgustine.newspaper.exoplayer
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.util.Util
 import com.orgustine.newspaper.R
-import com.orgustine.newspaper.databinding.ActivityPlayerBinding
+import com.orgustine.newspaper.databinding.FragmentPlayerBinding
 
-class PlayerActivity : AppCompatActivity() {
-    private val viewBinding by lazy(LazyThreadSafetyMode.NONE) {
-        ActivityPlayerBinding.inflate(layoutInflater)
-    }
+class PlayerFragment : Fragment(R.layout.fragment_player) {
+    private lateinit var viewBinding : FragmentPlayerBinding
     private var player: SimpleExoPlayer? = null
     private var playWhenReady = true
     private var currentWindow = 0
     private var playbackPosition = 0L
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(viewBinding.root)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewBinding = FragmentPlayerBinding.bind(view)
     }
-
     private fun initializePlayer() {
-        player = SimpleExoPlayer.Builder(this)
+        player = SimpleExoPlayer.Builder(requireContext())
             .build()
             .also { exoPlayer ->
                 viewBinding.videoView.player = exoPlayer
